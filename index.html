@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Lachwerk – Die besten Witze des Tages</title>
+  <meta name="description" content="Witze posten, liken und mitentscheiden: Tagesbeste, Wochenbeste und die besten Witze aller Zeiten. Ohne Anmeldung.">
+  <meta name="theme-color" content="#ffc928">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <!-- Vorschau beim Teilen (WhatsApp, Telegram …). Für beste Ergebnisse "og:image" auf die volle Adresse ändern,
+       z. B. https://DEIN-NAME.github.io/lachwerk/og-image.png -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Lachwerk – Die besten Witze des Tages">
+  <meta property="og:description" content="Witze posten, liken und mitentscheiden, welcher Witz heute ganz oben steht.">
+  <meta property="og:image" content="og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="bar">
+        <a class="logo" href="#/" aria-label="Lachwerk – zur Bestenliste">Lach<span>werk</span></a>
+        <button class="who" id="who" title="Deinen Anzeigenamen ändern">Gast</button>
+      </div>
+      <nav class="nav" id="nav" aria-label="Hauptnavigation"></nav>
+      <div id="listControls" style="display:grid;gap:10px">
+        <div class="tabs" role="tablist" aria-label="Zeitraum">
+          <button role="tab" data-range="day" aria-selected="true">Heute</button>
+          <button role="tab" data-range="week" aria-selected="false">Woche</button>
+          <button role="tab" data-range="all" aria-selected="false">Alltime</button>
+        </div>
+        <div class="chips" id="chips"></div>
+      </div>
+    </header>
+
+    <main id="main"><p class="loading">Lade Witze …</p></main>
+
+    <footer>
+      <p class="demo-banner" id="demoBanner" hidden>Demo-Modus: Stimmen und Witze bleiben nur in deinem Browser. Wie du die Seite live schaltest, steht in der README.</p>
+      <nav><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a></nav>
+    </footer>
+  </div>
+
+  <button class="fab" id="postBtn">+ Witz posten</button>
+
+  <div class="scrim" id="postSheet" hidden>
+    <form class="sheet" id="postForm" novalidate>
+      <h2>Neuer Witz</h2>
+      <label>Dein Name (wird angezeigt)<input type="text" id="postName" maxlength="24" autocomplete="nickname" placeholder="z. B. Pointenpaul"></label>
+      <label>Kategorie<select id="postCat"></select></label>
+      <label>Dein Witz<textarea id="postText" maxlength="500" placeholder="Was ist …"></textarea></label>
+      <div id="dupBox" hidden></div>
+      <p class="err" id="postErr"></p>
+      <p class="muted small">Keine Beleidigungen, keine Werbung. Gemeldete Witze werden geprüft.</p>
+      <div class="row end"><button type="button" class="btn ghost" data-close>Abbrechen</button><button class="btn accent" id="postSubmit">Veröffentlichen</button></div>
+    </form>
+  </div>
+
+  <div class="scrim" id="nameSheet" hidden>
+    <form class="sheet" id="nameForm" novalidate>
+      <h2>Dein Anzeigename</h2>
+      <p class="muted small">Erscheint unter deinen Witzen. Ein Konto brauchst du nicht.</p>
+      <label>Name<input type="text" id="nameInput" maxlength="24" autocomplete="nickname"></label>
+      <p class="err" id="nameErr"></p>
+      <div class="row end"><button type="button" class="btn ghost" data-close>Abbrechen</button><button class="btn">Speichern</button></div>
+    </form>
+  </div>
+
+  <div class="scrim" id="reportSheet" hidden>
+    <div class="sheet">
+      <h2>Witz melden?</h2>
+      <p class="muted small">Der Witz wird für dich ausgeblendet und von der Moderation geprüft. Nach mehreren Meldungen wird er für alle ausgeblendet.</p>
+      <div class="row end"><button class="btn ghost" data-close>Abbrechen</button><button class="btn" id="reportConfirm">Melden</button></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <script src="config.js"></script>
+  <script src="startwitze.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
