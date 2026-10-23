@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════
--- Lachwerk – 150 weitere Witze nachladen
+-- Lachwerk – 210 weitere Witze nachladen
 -- NUR nötig, wenn du supabase.sql schon früher ausgeführt hast.
 -- Im Supabase SQL Editor einfügen und „Run“ klicken.
 --
@@ -63,6 +63,26 @@ Sagt die andere: „Komm, Ketchup!“'),
 „Jetzt reißen Sie sich mal zusammen!“'),
   ('flachwitze', '„Herr Doktor, alle ignorieren mich.“
 „Der Nächste, bitte!“'),
+  ('flachwitze', '„Herr Ober, was macht die Fliege in meiner Suppe?“
+„Sieht nach Rückenschwimmen aus.“'),
+  ('flachwitze', '„Herr Ober, der Teller ist ja ganz nass!“
+„Das ist die Suppe.“'),
+  ('flachwitze', 'Was ist rot und flüstert?
+Eine Tomate mit Halsschmerzen.'),
+  ('flachwitze', 'Was ist braun und dreht sich im Kreis?
+Ein Kaffee, der umgerührt wird.'),
+  ('flachwitze', 'Was essen Boxer am liebsten?
+Schlagsahne.'),
+  ('flachwitze', 'Was sitzt auf dem Dach und raucht?
+Ein Schornstein.'),
+  ('flachwitze', 'Was hängt an der Wand und macht „Kcat-kcit“?
+Eine Uhr, die rückwärts läuft.'),
+  ('flachwitze', 'Was machen zwei wütende Schafe?
+Sie kriegen sich in die Wolle.'),
+  ('flachwitze', 'Was macht ein Kaktus auf einer Party?
+Er sticht aus der Menge heraus.'),
+  ('flachwitze', 'Was essen Gespenster am liebsten?
+Spukhetti.'),
   ('wortspiele', 'Warum gewinnt der Pilz jedes Rennen?
 Er ist ein Champignon.'),
   ('wortspiele', 'Wie heißt ein Spanier ohne Auto?
@@ -113,6 +133,26 @@ Die Parkbank.'),
 Die Wasserhose.'),
   ('wortspiele', 'Welcher Stuhl hat keine Beine?
 Der Stuhlgang.'),
+  ('wortspiele', 'Warum ist der Himmel so hoch?
+Damit sich die Vögel nicht den Kopf stoßen.'),
+  ('wortspiele', 'Welche Musik hören Luftballons?
+Pop.'),
+  ('wortspiele', 'Welcher Ball ist nicht rund?
+Der Maskenball.'),
+  ('wortspiele', 'Welches Schiff hat keine Segel?
+Das Kirchenschiff.'),
+  ('wortspiele', 'Welcher Hahn kräht nie?
+Der Wasserhahn.'),
+  ('wortspiele', 'Welche Mutter hat keine Kinder?
+Die Schraubenmutter.'),
+  ('wortspiele', 'Welcher Zahn beißt nicht?
+Der Löwenzahn.'),
+  ('wortspiele', 'Welcher Bart wächst nie?
+Der Schlüsselbart.'),
+  ('wortspiele', 'Welche Birne kann man nicht essen?
+Die Glühbirne.'),
+  ('wortspiele', 'Welcher Kater hat kein Fell?
+Der nach der Party.'),
   ('tiere', 'Wie bekommt man einen Elefanten in den Kühlschrank?
 Tür auf, Elefant rein, Tür zu.
 Und eine Giraffe? Tür auf, Elefant raus, Giraffe rein, Tür zu.'),
@@ -165,6 +205,26 @@ Er besucht seine Verwandtschaft, die Kakteen.'),
 Sie kriegen die Verpackung nicht auf.'),
   ('tiere', 'Sagt die Raupe zum Schmetterling:
 „Du hast dich aber verändert.“'),
+  ('tiere', 'Wie nennt man einen Hund, der zaubern kann?
+Labrakadabrador.'),
+  ('tiere', 'Warum tragen Kühe Glocken?
+Weil ihre Hörner nicht funktionieren.'),
+  ('tiere', 'Welchen Sport machen Bienen am liebsten?
+Summba.'),
+  ('tiere', 'Welcher Fisch ist immer gut gelaunt?
+Der Lachs.'),
+  ('tiere', 'Woran erkennt man, dass ein Elefant im Kühlschrank war?
+An den Fußspuren in der Butter.'),
+  ('tiere', 'Warum haben Störche so lange Beine?
+Damit ihre Füße bis zum Boden reichen.'),
+  ('tiere', 'Warum fliegen Eulen nur nachts?
+Tagsüber ist zu viel Verkehr.'),
+  ('tiere', 'Was zählen Schafe, wenn sie nicht einschlafen können?
+Menschen.'),
+  ('tiere', 'Zwei Goldfische im Glas. Fragt der eine: „Glaubst du an Gott?“
+„Natürlich. Wer wechselt denn sonst das Wasser?“'),
+  ('tiere', 'Fragt eine Schlange die andere: „Sind wir eigentlich giftig?“ – „Wieso?“
+„Ich hab mir gerade auf die Zunge gebissen.“'),
   ('schule', 'Lehrer: „Was ist die Hälfte von acht?“
 Fritzchen: „Waagerecht null, senkrecht drei.“'),
   ('schule', 'Lehrer: „Ich gehe, du gehst, er geht, wir gehen, ihr geht, sie gehen. Was bedeutet das?“
@@ -215,6 +275,26 @@ Fritzchen: „Egal wo ich hingehe, am Ende lande ich wieder in der Schule.“'),
 „Zwillinge.“'),
   ('schule', 'Mutter: „Wie war dein erster Schultag?“
 „Erster? Muss ich da etwa noch mal hin?“'),
+  ('schule', 'Lehrerin: „Nenne mir ein Säugetier ohne Zähne.“
+Fritzchen: „Meinen Opa.“'),
+  ('schule', 'Lehrer: „Was ist ein Vakuum?“
+Fritzchen: „Ich hab''s im Kopf, komme aber gerade nicht drauf.“'),
+  ('schule', '„Mama, ich war heute der Schnellste!“ – „Beim Sport?“
+„Nein, beim Nachhausegehen.“'),
+  ('schule', 'Lehrerin: „Warum ist dein Aufsatz so nass?“
+Fritzchen: „Sie wollten doch einen Fließtext.“'),
+  ('schule', 'Mathelehrer: „Ein Drittel von euch ist durch den Test gefallen.“
+Fritzchen: „So viele sind wir doch gar nicht!“'),
+  ('schule', 'Lehrer: „Wer zuletzt lacht …“
+Fritzchen: „… hat den Witz nicht verstanden.“'),
+  ('schule', '„Wie war die Klassenfahrt?“
+„Super! Der Lehrer hat uns zwei Tage lang nicht gefunden.“'),
+  ('schule', 'Lehrerin: „Wer weiß, was Hieroglyphen sind?“
+Fritzchen: „Die Schrift von unserem Hausarzt.“'),
+  ('schule', 'Biolehrer: „Was hat sechs Beine, ist grün und sitzt auf einem Blatt?“
+Fritzchen: „Keine Ahnung, aber es krabbelt Ihnen gerade den Arm hoch.“'),
+  ('schule', 'Lehrer: „Wenn du so weitermachst, wirst du nie versetzt!“
+Fritzchen: „Auch gut. Dann bleibe ich in Ihrer Klasse.“'),
   ('buero', 'Bewerbungsgespräch: „Haben Sie Erfahrung mit Teamarbeit?“
 „Ja, ich habe schon oft andere für mich arbeiten lassen.“'),
   ('buero', '„Was sind Ihre Stärken?“ – „Ich bin sehr anpassungsfähig.“ – „Und Ihre Schwächen?“
@@ -265,6 +345,26 @@ Wenn alle gemeinsam auf den Feierabend warten.'),
 Arbeiten.'),
   ('buero', 'Stellenanzeige: „Wir sind wie eine Familie.“
 Übersetzt: „Pünktlich Feierabend gibt es hier nicht.“'),
+  ('buero', '„Hast du kurz fünf Minuten?“
+Das gefährlichste Wort im Büro ist „kurz“.'),
+  ('buero', 'Der Kopierer funktioniert immer.
+Außer, man hat es eilig.'),
+  ('buero', 'Chef: „Ich bin offen für jede Kritik.“ – „Dann hätte ich da etwas …“
+„Aber nicht jetzt.“'),
+  ('buero', 'Warum ist die Kaffeemaschine wichtiger als der Chef?
+Ohne Kaffeemaschine läuft hier gar nichts.'),
+  ('buero', '„Wie lang ist bei euch die Mittagspause?“
+„So lange, bis der Chef es merkt.“'),
+  ('buero', 'Ich habe eine Allergie gegen Montagsmeetings.
+Symptome: Gähnen, Augenrollen und plötzliche Zahnarzttermine.'),
+  ('buero', '„Haben Sie Hobbys?“
+„Ja. Feierabend.“'),
+  ('buero', 'Chef: „Warum haben Sie gestern nicht angerufen, dass Sie krank sind?“
+„Ich war zu krank zum Telefonieren. Aber ich hab''s auf Instagram gepostet.“'),
+  ('buero', 'Büro-Mathematik:
+5 Minuten Pause + 1 Kaffee + 1 Kollege mit Neuigkeiten = 45 Minuten.'),
+  ('buero', '„Was machst du eigentlich im Homeoffice?“
+„Meistens die Wäsche.“'),
   ('nerd', 'Warum mögen Programmierer dunkle Bildschirme?
 Weil Licht Bugs anzieht.'),
   ('nerd', 'In welcher Kneipe treffen sich Programmierer?
@@ -314,7 +414,27 @@ Sie verlieren nur ihre Funktion.'),
   ('nerd', 'Was ist ein Polarbär?
 Ein rechtwinkliger Bär nach dem Koordinatenwechsel.'),
   ('nerd', 'Ein Tester geht in eine Bar. Bestellt 1 Bier. 0 Bier. 99999999 Bier. −1 Bier. Eine Eidechse.
-Der erste echte Gast fragt, wo die Toilette ist. Die Bar geht in Flammen auf.')
+Der erste echte Gast fragt, wo die Toilette ist. Die Bar geht in Flammen auf.'),
+  ('nerd', 'Wie viele Softwaretester braucht man, um eine Glühbirne zu wechseln?
+Keinen. Sie melden nur, dass es dunkel ist.'),
+  ('nerd', 'Warum hat sich die Tabelle von der Datenbank getrennt?
+Zu viele Fremdschlüssel.'),
+  ('nerd', 'Warum haben Elektriker immer gute Laune?
+Sie sind gut geerdet.'),
+  ('nerd', 'Was sagt der Akku zum Handy?
+„Ich bin am Ende.“'),
+  ('nerd', 'Mein Handy hat noch 1 % Akku.
+So konzentriert habe ich noch nie gearbeitet.'),
+  ('nerd', 'Ein Physiker im Café: „Einen Espresso ohne Milch, bitte.“
+Kellner: „Milch ist leider aus. Darf es ein Espresso ohne Sahne sein?“'),
+  ('nerd', 'Unendlich viele Mathematiker gehen in eine Bar. Der erste bestellt ein Bier, der zweite ein halbes, der dritte ein Viertel …
+Der Barkeeper stellt zwei Bier hin: „Ihr müsst eure Grenzen kennen.“'),
+  ('nerd', 'Drei Statistiker gehen auf die Jagd. Der erste schießt einen Meter links vorbei, der zweite einen Meter rechts.
+Der dritte jubelt: „Im Durchschnitt getroffen!“'),
+  ('nerd', 'Wie nennt man einen Laptop ohne Akku?
+Einen Desktop.'),
+  ('nerd', 'Was ist schlimmer als ein Bug?
+Ein Bug, der nur freitags um 17 Uhr auftaucht.')
   ) as t(cat, body)
   join public.categories c on c.slug = t.cat
   where not exists (

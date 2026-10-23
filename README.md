@@ -10,7 +10,7 @@ Rankings für **Heute**, **Woche** und **Alltime**. Reine HTML/CSS/JS-Dateien, k
 3. **Settings → Pages → Build and deployment**: Source *Deploy from a branch*, Branch *main*, Ordner */ (root)*, **Save**.
 4. Nach ca. 1 Minute ist die Seite erreichbar unter `https://DEIN-NAME.github.io/lachwerk/`.
 
-Im Demo-Modus läuft alles sofort mit 150 Startwitzen. Stimmen und neue Witze bleiben aber **nur im Browser des jeweiligen Besuchers**.
+Im Demo-Modus läuft alles sofort mit 360 Startwitzen. Jeden Tag erscheint unter „Heute“ automatisch eine neue Auswahl. Stimmen und neue Witze bleiben aber **nur im Browser des jeweiligen Besuchers**.
 Zum Ausprobieren reicht das. Für eine echte Community schaltest du den Live-Modus ein.
 
 ## Live schalten: gemeinsame Witze und Stimmen (ca. 10 Minuten)
@@ -19,7 +19,8 @@ GitHub Pages kann nur Dateien ausliefern und nichts speichern. Die Daten liegen 
 
 1. Auf [supabase.com](https://supabase.com) ein Projekt anlegen. Region: **Central EU (Frankfurt)**.
 2. Im Projekt **SQL Editor → New query**, den kompletten Inhalt von `supabase.sql` einfügen und **Run** klicken.
-   Das legt Tabellen, Schutzregeln und die 150 Startwitze an.
+   Das legt Tabellen, Schutzregeln und die 360 Startwitze an. Sie sind über 35 Tage vorgeplant:
+   Jeden Tag erscheinen etwa 10 neue, damit „Heute“ auch ohne Beiträge von Besuchern gefüllt ist.
 3. Admin-Schlüssel für die Moderation setzen (mindestens 12 Zeichen, gut merken):
    ```sql
    select public.set_admin_key('hier-dein-geheimer-schluessel');
@@ -36,6 +37,12 @@ GitHub Pages kann nur Dateien ausliefern und nichts speichern. Die Daten liegen 
 
 Nach etwa einer Minute ist die Seite live. Der gelbe Demo-Hinweis unten verschwindet.
 
+## Weitere Witze nachladen
+
+Du hast `supabase.sql` schon früher ausgeführt? Dann führe im SQL Editor `weitere_witze.sql` aus.
+Es kommen bis zu 210 neue Witze dazu. Witze, die es schon gibt, werden übersprungen. Mehrfach ausführen ist unschädlich.
+Bei einer Neueinrichtung brauchst du die Datei nicht, `supabase.sql` enthält bereits alle 360.
+
 ## Moderation
 
 Seite mit `#/admin` am Ende aufrufen, z. B. `https://DEIN-NAME.github.io/lachwerk/#/admin`, und den Admin-Schlüssel eingeben.
@@ -51,7 +58,7 @@ Im Demo-Modus lautet der Schlüssel `demo-moderation`.
 | Eigene Witze | Können nicht selbst bewertet werden. |
 | Posten | Max. 10 Witze pro Gerät und 20 pro Anschluss in 24 Stunden. |
 | Duplikate | Ähnlichkeitsvergleich (pg_trgm). Ab 60 % Übereinstimmung wird das Posten abgelehnt und das Original verlinkt. Schon beim Tippen erscheint ein Hinweis. |
-| Ranking | Wilson-Score: fair auch bei wenigen Stimmen. Heute = 24 h, Woche = 7 Tage, Alltime = ab 20 Stimmen. |
+| Ranking | Wilson-Score: fair auch bei wenigen Stimmen. Heute = 24 h, Woche = 7 Tage, Alltime = ab 20 Stimmen. Ist ein Zeitraum leer, zeigt die Seite automatisch die Besten der Woche bzw. aller Zeiten. |
 | Swipe-Modus | Zeigt zuerst Witze mit unter 20 Stimmen, damit jeder neue Witz eine Chance bekommt. |
 | Melden | Ab 3 Meldungen von verschiedenen Anschlüssen wird ein Witz ausgeblendet. Nach einer Freigabe erst ab 10. |
 | Teilen | WhatsApp-Link, Link teilen und „Als Bild teilen“ (Story-Bild 1080×1920, wird im Browser erzeugt). |
@@ -67,8 +74,9 @@ index.html        Seite
 app.js            App-Logik (Demo- und Live-Modus)
 style.css         Gestaltung (hell und dunkel)
 config.js         Supabase-Zugang (leer = Demo-Modus)
-startwitze.js     150 Startwitze für den Demo-Modus
+startwitze.js     360 Startwitze für den Demo-Modus
 supabase.sql      Datenbank: Tabellen, Schutzregeln, Funktionen, Startwitze
+weitere_witze.sql 210 neue Witze für eine schon eingerichtete Datenbank
 impressum.html    Vorlage, bitte ausfüllen
 datenschutz.html  Vorlage, bitte ausfüllen
 og-image.png      Vorschaubild beim Teilen

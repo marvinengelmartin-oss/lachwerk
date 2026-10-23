@@ -114,18 +114,24 @@
   const demo = (() => {
     const rnd = mulberry(20261015);
     const authors = ["kalauerkönig", "mia_lacht", "bytebert", "montagsmuffel", "pointenpaul", "fritzchen_fan", "lena.lol", "witzbold42", "lachsack", "frau_flach"];
-    const base = store.get("demo_base", null) || Date.now();
-    store.set("demo_base", base);
+    // Tägliche Auswahl: Jeder Witz hat einen festen Tag in einem 30-Tage-Zyklus.
+    // So erscheinen jeden Tag rund 12 „neue“ Witze unter „Heute“, egal wann jemand die Seite öffnet.
+    const PERIOD = 30, DAY = 864e5, now = Date.now();
+    const midnight = new Date(); midnight.setHours(0, 0, 0, 0);
+    const today0 = midnight.getTime();
+    const dayIdx = Math.round((today0 - midnight.getTimezoneOffset() * 6e4) / DAY);
     const seed = [];
-    let id = 1;
+    let id = 1, k = 0;
     for (const [cat, list] of Object.entries(window.STARTWITZE || {})) for (const text of list) {
-      const r = rnd(); let ageH, n;
-      if (r < 0.2) { ageH = rnd() * 23; n = Math.floor(rnd() * 28); }
-      else if (r < 0.45) { ageH = 24 + rnd() * 140; n = 5 + Math.floor(rnd() * 140); }
-      else { ageH = 170 + rnd() * 2300; n = 20 + Math.floor(rnd() * rnd() * 2600); }
-      const up = Math.round(n * (0.5 + rnd() * 0.46));
-      seed.push({ id: id++, cat, text, author: authors[Math.floor(rnd() * authors.length)], created: new Date(base - ageH * 36e5).toISOString(), up, down: n - up, status: "visible", reports: 0 });
+      const slot = (k++ * 7 + 3) % PERIOD;                 // gleichmäßig über die 30 Tage verteilt
+      const ageDays = (((dayIdx - slot) % PERIOD) + PERIOD) % PERIOD;
+      const hour = rnd(), rate = 3 + rnd() * 45, ratio = 0.5 + rnd() * 0.46;
+      const created = ageDays === 0 ? today0 + hour * (now - today0) : today0 - ageDays * DAY + hour * DAY;
+      const n = Math.floor(((now - created) / DAY) * rate);
+      const up = Math.round(n * ratio);
+      seed.push({ id: id++, cat, text, author: authors[Math.floor(rnd() * authors.length)], created: new Date(created).toISOString(), up, down: n - up, status: "visible", reports: 0 });
     }
+    const base = now;
     seed.push({ id: id++, cat: "flachwitze", text: "GRATIS FOLLOWER!!! Klick auf meinen Kanal, 1000 Abos in 24 Stunden", author: "promo_profi", created: new Date(base - 3 * 36e5).toISOString(), up: 0, down: 6, status: "hidden", reports: 4 });
     const st = { votes: store.get("demo_votes", {}), posted: store.get("demo_posted", []), mod: store.get("demo_mod", {}), reported: store.get("demo_reported", []) };
     const save = () => { store.set("demo_votes", st.votes); store.set("demo_posted", st.posted); store.set("demo_mod", st.mod); store.set("demo_reported", st.reported); };
@@ -265,16 +271,27 @@
   /* ───────── Bestenliste ───────── */
   async function renderList(token) {
     if (!S.rows.length) $("#main").innerHTML = '<p class="loading">Lade Bestenliste …</p>';
-    const rows = await API.ranking(S.range, S.cat, S.shown + 1, 0);
+    let rows = await API.ranking(S.range, S.cat, S.shown + 1, 0);
+    S.fallback = null;
+    // Noch nichts los? Dann die Besten des nächstgrößeren Zeitraums zeigen statt einer leeren Seite.
+    for (const wider of S.range === "day" ? ["week", "all"] : S.range === "week" ? ["all"] : []) {
+      if (rows.length) break;
+      rows = await API.ranking(wider, S.cat, S.shown + 1, 0);
+      if (rows.length) S.fallback = wider;
+    }
     if (stale(token)) return;
     S.hasMore = rows.length > S.shown;
     S.rows = rows.slice(0, S.shown).filter((j) => !S.hiddenForMe.has(j.id));
     drawList();
   }
   function drawList() {
-    const r = RANGES[S.range];
+    const r = RANGES[S.fallback || S.range];
+    const fallbackNote = S.fallback
+      ? `<div class="notice">${S.range === "day" ? "Heute gibt es noch keine neuen Witze." : "Diese Woche gibt es noch keine neuen Witze."} Hier sind die ${S.fallback === "week" ? "Besten der Woche" : "Besten aller Zeiten"}. Poste den ersten von heute!</div>`
+      : "";
     $("#main").innerHTML = `<div class="view">
       <a class="cta" href="#/bewerten"><span><strong>Neue Witze bewerten</strong><br>Wisch dich durch frische Einsendungen und entscheide mit, wer nach oben kommt.</span><span class="arrow" aria-hidden="true">→</span></a>
+      ${fallbackNote}
       <div class="meta-row"><span>${r.label}</span><span>${S.rows.length === 1 ? "1 Witz" : S.rows.length + (S.hasMore ? "+" : "") + " Witze"}</span></div>
       ${S.rows.length ? `<ol class="list">${S.rows.map((j, i) => cardHtml(j, i + 1, i === 0 ? r.best : "")).join("")}</ol>`
         : `<p class="empty">${S.range === "all" ? "Noch hat kein Witz 20 Stimmen. Hilf mit und bewerte neue Witze!" : "Hier gibt es noch keine Witze. Poste den ersten!"}</p>`}

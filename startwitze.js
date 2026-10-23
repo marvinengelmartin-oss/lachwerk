@@ -1,4 +1,5 @@
-// 300 Startwitze für den Demo-Modus (im Live-Modus kommen sie aus der Datenbank, siehe supabase.sql)
+// 360 Startwitze für den Demo-Modus (im Live-Modus kommen sie aus der Datenbank, siehe supabase.sql)
+// Jeden Tag erscheint automatisch eine neue Auswahl unter „Heute“ (30-Tage-Zyklus, siehe app.js).
 window.STARTWITZE = {
  "flachwitze": [
   "Was ist grün und klopft an die Tür?\nEin Klopfsalat.",
@@ -50,7 +51,17 @@ window.STARTWITZE = {
   "Kommt ein Pferd in die Bar. Fragt der Barkeeper:\n„Warum so ein langes Gesicht?“",
   "Kommt ein Skelett in die Bar und bestellt:\n„Ein Bier und einen Wischmopp, bitte.“",
   "„Herr Doktor, ich fühle mich wie ein Vorhang.“\n„Jetzt reißen Sie sich mal zusammen!“",
-  "„Herr Doktor, alle ignorieren mich.“\n„Der Nächste, bitte!“"
+  "„Herr Doktor, alle ignorieren mich.“\n„Der Nächste, bitte!“",
+  "„Herr Ober, was macht die Fliege in meiner Suppe?“\n„Sieht nach Rückenschwimmen aus.“",
+  "„Herr Ober, der Teller ist ja ganz nass!“\n„Das ist die Suppe.“",
+  "Was ist rot und flüstert?\nEine Tomate mit Halsschmerzen.",
+  "Was ist braun und dreht sich im Kreis?\nEin Kaffee, der umgerührt wird.",
+  "Was essen Boxer am liebsten?\nSchlagsahne.",
+  "Was sitzt auf dem Dach und raucht?\nEin Schornstein.",
+  "Was hängt an der Wand und macht „Kcat-kcit“?\nEine Uhr, die rückwärts läuft.",
+  "Was machen zwei wütende Schafe?\nSie kriegen sich in die Wolle.",
+  "Was macht ein Kaktus auf einer Party?\nEr sticht aus der Menge heraus.",
+  "Was essen Gespenster am liebsten?\nSpukhetti."
  ],
  "wortspiele": [
   "Was macht ein Pirat am Computer?\nEr drückt die Enter-Taste.",
@@ -102,7 +113,17 @@ window.STARTWITZE = {
   "Welche Schlange ist die gemeinste?\nDie Warteschlange.",
   "Welche Bank hat kein Geld?\nDie Parkbank.",
   "Welche Hose hat keine Beine?\nDie Wasserhose.",
-  "Welcher Stuhl hat keine Beine?\nDer Stuhlgang."
+  "Welcher Stuhl hat keine Beine?\nDer Stuhlgang.",
+  "Warum ist der Himmel so hoch?\nDamit sich die Vögel nicht den Kopf stoßen.",
+  "Welche Musik hören Luftballons?\nPop.",
+  "Welcher Ball ist nicht rund?\nDer Maskenball.",
+  "Welches Schiff hat keine Segel?\nDas Kirchenschiff.",
+  "Welcher Hahn kräht nie?\nDer Wasserhahn.",
+  "Welche Mutter hat keine Kinder?\nDie Schraubenmutter.",
+  "Welcher Zahn beißt nicht?\nDer Löwenzahn.",
+  "Welcher Bart wächst nie?\nDer Schlüsselbart.",
+  "Welche Birne kann man nicht essen?\nDie Glühbirne.",
+  "Welcher Kater hat kein Fell?\nDer nach der Party."
  ],
  "tiere": [
   "Treffen sich zwei Schnecken. Fragt die eine: „Warum so schnell unterwegs?“\n„Ich hab mein Haus vergessen.“",
@@ -154,7 +175,17 @@ window.STARTWITZE = {
   "Kommt ein Hase in die Bäckerei: „Hattu Möhrenkuchen?“ – „Nein.“ Am nächsten Tag: „Hattu Möhrenkuchen?“ – „Nein!“\nAm dritten Tag hat der Bäcker extra einen gebacken. „Hattu Möhrenkuchen?“ – „Ja!“ – „Muss ja eklig schmecken.“",
   "Warum geht der Igel in den Blumenladen?\nEr besucht seine Verwandtschaft, die Kakteen.",
   "Warum fressen Eisbären keine Pinguine?\nSie kriegen die Verpackung nicht auf.",
-  "Sagt die Raupe zum Schmetterling:\n„Du hast dich aber verändert.“"
+  "Sagt die Raupe zum Schmetterling:\n„Du hast dich aber verändert.“",
+  "Wie nennt man einen Hund, der zaubern kann?\nLabrakadabrador.",
+  "Warum tragen Kühe Glocken?\nWeil ihre Hörner nicht funktionieren.",
+  "Welchen Sport machen Bienen am liebsten?\nSummba.",
+  "Welcher Fisch ist immer gut gelaunt?\nDer Lachs.",
+  "Woran erkennt man, dass ein Elefant im Kühlschrank war?\nAn den Fußspuren in der Butter.",
+  "Warum haben Störche so lange Beine?\nDamit ihre Füße bis zum Boden reichen.",
+  "Warum fliegen Eulen nur nachts?\nTagsüber ist zu viel Verkehr.",
+  "Was zählen Schafe, wenn sie nicht einschlafen können?\nMenschen.",
+  "Zwei Goldfische im Glas. Fragt der eine: „Glaubst du an Gott?“\n„Natürlich. Wer wechselt denn sonst das Wasser?“",
+  "Fragt eine Schlange die andere: „Sind wir eigentlich giftig?“ – „Wieso?“\n„Ich hab mir gerade auf die Zunge gebissen.“"
  ],
  "schule": [
   "Lehrerin: „Nenne mir fünf Tiere aus Afrika.“\nFritzchen: „Vier Löwen und ein Elefant.“",
@@ -206,7 +237,17 @@ window.STARTWITZE = {
   "„Was ist dein Lieblingsfach?“\n„Die große Pause.“",
   "Lehrer: „Woher weißt du, dass die Erde rund ist?“\nFritzchen: „Egal wo ich hingehe, am Ende lande ich wieder in der Schule.“",
   "Lehrer: „Was ist die Mehrzahl von Mann?“ – „Männer.“ – „Und von Kind?“\n„Zwillinge.“",
-  "Mutter: „Wie war dein erster Schultag?“\n„Erster? Muss ich da etwa noch mal hin?“"
+  "Mutter: „Wie war dein erster Schultag?“\n„Erster? Muss ich da etwa noch mal hin?“",
+  "Lehrerin: „Nenne mir ein Säugetier ohne Zähne.“\nFritzchen: „Meinen Opa.“",
+  "Lehrer: „Was ist ein Vakuum?“\nFritzchen: „Ich hab's im Kopf, komme aber gerade nicht drauf.“",
+  "„Mama, ich war heute der Schnellste!“ – „Beim Sport?“\n„Nein, beim Nachhausegehen.“",
+  "Lehrerin: „Warum ist dein Aufsatz so nass?“\nFritzchen: „Sie wollten doch einen Fließtext.“",
+  "Mathelehrer: „Ein Drittel von euch ist durch den Test gefallen.“\nFritzchen: „So viele sind wir doch gar nicht!“",
+  "Lehrer: „Wer zuletzt lacht …“\nFritzchen: „… hat den Witz nicht verstanden.“",
+  "„Wie war die Klassenfahrt?“\n„Super! Der Lehrer hat uns zwei Tage lang nicht gefunden.“",
+  "Lehrerin: „Wer weiß, was Hieroglyphen sind?“\nFritzchen: „Die Schrift von unserem Hausarzt.“",
+  "Biolehrer: „Was hat sechs Beine, ist grün und sitzt auf einem Blatt?“\nFritzchen: „Keine Ahnung, aber es krabbelt Ihnen gerade den Arm hoch.“",
+  "Lehrer: „Wenn du so weitermachst, wirst du nie versetzt!“\nFritzchen: „Auch gut. Dann bleibe ich in Ihrer Klasse.“"
  ],
  "buero": [
   "Chef: „Sie kommen jeden Tag zu spät!“\nIch: „Dafür gehe ich auch früher.“",
@@ -258,7 +299,17 @@ window.STARTWITZE = {
   "Chef: „Sie haben die ganze Woche nichts gemacht!“\n„Ich wollte die Kollegen nicht unter Druck setzen.“",
   "„Chef, darf ich morgen früher gehen? Meine Frau will mit mir Möbel kaufen.“ – „Auf keinen Fall.“\n„Danke, Chef! Ich wusste, Sie lassen mich nicht im Stich.“",
   "Was ist das Gegenteil von einem Meeting?\nArbeiten.",
-  "Stellenanzeige: „Wir sind wie eine Familie.“\nÜbersetzt: „Pünktlich Feierabend gibt es hier nicht.“"
+  "Stellenanzeige: „Wir sind wie eine Familie.“\nÜbersetzt: „Pünktlich Feierabend gibt es hier nicht.“",
+  "„Hast du kurz fünf Minuten?“\nDas gefährlichste Wort im Büro ist „kurz“.",
+  "Der Kopierer funktioniert immer.\nAußer, man hat es eilig.",
+  "Chef: „Ich bin offen für jede Kritik.“ – „Dann hätte ich da etwas …“\n„Aber nicht jetzt.“",
+  "Warum ist die Kaffeemaschine wichtiger als der Chef?\nOhne Kaffeemaschine läuft hier gar nichts.",
+  "„Wie lang ist bei euch die Mittagspause?“\n„So lange, bis der Chef es merkt.“",
+  "Ich habe eine Allergie gegen Montagsmeetings.\nSymptome: Gähnen, Augenrollen und plötzliche Zahnarzttermine.",
+  "„Haben Sie Hobbys?“\n„Ja. Feierabend.“",
+  "Chef: „Warum haben Sie gestern nicht angerufen, dass Sie krank sind?“\n„Ich war zu krank zum Telefonieren. Aber ich hab's auf Instagram gepostet.“",
+  "Büro-Mathematik:\n5 Minuten Pause + 1 Kaffee + 1 Kollege mit Neuigkeiten = 45 Minuten.",
+  "„Was machst du eigentlich im Homeoffice?“\n„Meistens die Wäsche.“"
  ],
  "nerd": [
   "Warum verwechseln Programmierer Halloween und Weihnachten?\nWeil OCT 31 = DEC 25.",
@@ -310,6 +361,16 @@ window.STARTWITZE = {
   "Was macht ein Mathematiker, wenn ihm kalt ist?\nEr stellt sich in die Ecke. Da sind 90 Grad.",
   "Mathematiker sterben nicht.\nSie verlieren nur ihre Funktion.",
   "Was ist ein Polarbär?\nEin rechtwinkliger Bär nach dem Koordinatenwechsel.",
-  "Ein Tester geht in eine Bar. Bestellt 1 Bier. 0 Bier. 99999999 Bier. −1 Bier. Eine Eidechse.\nDer erste echte Gast fragt, wo die Toilette ist. Die Bar geht in Flammen auf."
+  "Ein Tester geht in eine Bar. Bestellt 1 Bier. 0 Bier. 99999999 Bier. −1 Bier. Eine Eidechse.\nDer erste echte Gast fragt, wo die Toilette ist. Die Bar geht in Flammen auf.",
+  "Wie viele Softwaretester braucht man, um eine Glühbirne zu wechseln?\nKeinen. Sie melden nur, dass es dunkel ist.",
+  "Warum hat sich die Tabelle von der Datenbank getrennt?\nZu viele Fremdschlüssel.",
+  "Warum haben Elektriker immer gute Laune?\nSie sind gut geerdet.",
+  "Was sagt der Akku zum Handy?\n„Ich bin am Ende.“",
+  "Mein Handy hat noch 1 % Akku.\nSo konzentriert habe ich noch nie gearbeitet.",
+  "Ein Physiker im Café: „Einen Espresso ohne Milch, bitte.“\nKellner: „Milch ist leider aus. Darf es ein Espresso ohne Sahne sein?“",
+  "Unendlich viele Mathematiker gehen in eine Bar. Der erste bestellt ein Bier, der zweite ein halbes, der dritte ein Viertel …\nDer Barkeeper stellt zwei Bier hin: „Ihr müsst eure Grenzen kennen.“",
+  "Drei Statistiker gehen auf die Jagd. Der erste schießt einen Meter links vorbei, der zweite einen Meter rechts.\nDer dritte jubelt: „Im Durchschnitt getroffen!“",
+  "Wie nennt man einen Laptop ohne Akku?\nEinen Desktop.",
+  "Was ist schlimmer als ein Bug?\nEin Bug, der nur freitags um 17 Uhr auftaucht."
  ]
 };
