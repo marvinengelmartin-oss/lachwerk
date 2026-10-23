@@ -11,6 +11,6 @@
 // Den "service_role"/"secret" Key NIEMALS hier eintragen!
 // ─────────────────────────────────────────────────────────────
 window.LACHWERK_CONFIG = {
-  supabaseUrl: "",      // z. B. "https://abcdefgh.supabase.co"
-  supabaseAnonKey: "",  // z. B. "eyJhbGciOi..." oder "sb_publishable_..."
+  supabaseUrl: "https://yssqvkhmglwdxvjurxag.supabase.co",
+  supabaseAnonKey: "sb_publishable_TI6LLkRXgR6BIR9TykIBPg_KCItfwho",
 };
