@@ -4,7 +4,8 @@
 -- Danach unten den Admin-Schlüssel setzen (letzte Zeile).
 -- ═══════════════════════════════════════════════════════════════════
 --
--- Prinzip: Jeder Browser bekommt eine zufällige Geräte-ID (localStorage).
+-- Prinzip: Lesen, Liken und Bewerten geht ohne Konto (zufällige Geräte-ID im Browser).
+-- Zum POSTEN braucht man ein Konto (Supabase Auth, E-Mail + Passwort).
 -- Besucher greifen NIE direkt auf Tabellen zu, sondern nur über die
 -- Funktionen unten. Die prüfen Limits, Duplikate und eigene Witze.
 -- IP-Adressen werden nur gesalzen gehasht gespeichert.
@@ -29,6 +30,36 @@ create table public.categories (
   position  int not null default 0
 );
 
+-- Konten: Supabase Auth verwaltet E-Mail und Passwort (auth.users),
+-- hier liegt nur der öffentliche Benutzername.
+create table public.profiles (
+  id          uuid primary key references auth.users on delete cascade,
+  username    text not null check (username ~ '^[A-Za-z0-9_.äöüÄÖÜß]{3,20}$'),
+  created_at  timestamptz not null default now()
+);
+create unique index profiles_username_lower on public.profiles (lower(username));
+
+-- Bei jeder Registrierung automatisch ein Profil anlegen (Name aus den Anmeldedaten)
+create function public.handle_new_user() returns trigger
+language plpgsql security definer set search_path = public as $$
+declare
+  v_name text := trim(coalesce(new.raw_user_meta_data ->> 'username', ''));
+  i      int  := 0;
+begin
+  -- Ungültiger oder schon vergebener Name: Ersatzname wählen (die Registrierung darf nie scheitern)
+  while v_name !~ '^[A-Za-z0-9_.äöüÄÖÜß]{3,20}$'
+        or exists (select 1 from public.profiles p where lower(p.username) = lower(v_name)) loop
+    i := i + 1;
+    v_name := 'nutzer_' || substr(md5(new.id::text || i::text), 1, 10);
+  end loop;
+  insert into public.profiles (id, username) values (new.id, v_name);
+  return new;
+end $$;
+
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_user();
+
 -- Text vereinheitlichen (für den Duplikat-Check)
 create function public.normalize_joke(t text) returns text
 language sql immutable as $$
@@ -42,6 +73,7 @@ create table public.jokes (
   body_norm      text generated always as (public.normalize_joke(body)) stored,
   author_name    text not null check (char_length(author_name) between 2 and 24),
   author_device  uuid not null,
+  author_user    uuid references auth.users on delete set null,   -- Konto des Verfassers
   ip_hash        text,
   status         text not null default 'visible' check (status in ('visible', 'hidden', 'removed')),
   up_count       int  not null default 0,
@@ -52,6 +84,7 @@ create table public.jokes (
 );
 create index jokes_visible_recent on public.jokes (created_at desc) where status = 'visible';
 create index jokes_device_recent  on public.jokes (author_device, created_at desc);
+create index jokes_user_recent    on public.jokes (author_user, created_at desc);
 create index jokes_ip_recent      on public.jokes (ip_hash, created_at desc);
 create index jokes_body_trgm      on public.jokes using gin (body_norm extensions.gin_trgm_ops);
 
@@ -97,7 +130,7 @@ returns double precision language sql immutable as $$
 $$;
 
 create view public.joke_feed as
-  select j.id, j.body, c.slug as category_slug, j.author_name, j.author_device, j.created_at,
+  select j.id, j.body, c.slug as category_slug, j.author_name, j.author_device, j.author_user, j.created_at,
          j.up_count, j.down_count, j.report_count, j.status, j.reviewed_at,
          public.wilson_lower(j.up_count, j.down_count) as score
   from public.jokes j
@@ -113,7 +146,7 @@ returns table (id bigint, body text, category_slug text, author_name text, creat
                up_count int, down_count int, score double precision, is_own boolean, my_vote smallint)
 language sql stable security definer set search_path = public as $$
   select f.id, f.body, f.category_slug, f.author_name, f.created_at, f.up_count, f.down_count, f.score,
-         f.author_device = p_device, v.value
+         (f.author_device = p_device or f.author_user = auth.uid()) is true, v.value
   from public.joke_feed f
   left join public.votes v on v.joke_id = f.id and v.device_id = p_device
   where f.status = 'visible'
@@ -132,7 +165,7 @@ returns table (id bigint, body text, category_slug text, author_name text, creat
                up_count int, down_count int, score double precision, is_own boolean, my_vote smallint)
 language sql stable security definer set search_path = public as $$
   select f.id, f.body, f.category_slug, f.author_name, f.created_at, f.up_count, f.down_count, f.score,
-         f.author_device = p_device, v.value
+         (f.author_device = p_device or f.author_user = auth.uid()) is true, v.value
   from public.joke_feed f
   left join public.votes v on v.joke_id = f.id and v.device_id = p_device
   where f.id = p_id and f.status = 'visible'
@@ -148,6 +181,7 @@ language sql volatile security definer set search_path = public as $$
   from public.joke_feed f
   where f.status = 'visible'
     and f.author_device <> p_device
+    and (auth.uid() is null or f.author_user is null or f.author_user <> auth.uid())
     and not (f.id = any(coalesce(p_exclude, '{}')))
     and not exists (select 1 from public.votes v where v.joke_id = f.id and v.device_id = p_device)
   order by (f.up_count + f.down_count >= 20), (f.created_at < now() - interval '7 days'), random()
@@ -177,13 +211,14 @@ language plpgsql security definer set search_path = public as $$
 declare
   h        text := public.client_ip_hash();
   v_author uuid;
+  v_user   uuid;
 begin
   if p_device is null then raise exception 'invalid_device'; end if;
   if p_value is null or p_value not in (-1, 0, 1) then raise exception 'invalid_value'; end if;
 
-  select j.author_device into v_author from public.jokes j where j.id = p_joke and j.status = 'visible';
+  select j.author_device, j.author_user into v_author, v_user from public.jokes j where j.id = p_joke and j.status = 'visible';
   if not found then raise exception 'joke_not_found'; end if;
-  if v_author = p_device then raise exception 'own_joke'; end if;
+  if v_author = p_device or (v_user is not null and v_user = auth.uid()) then raise exception 'own_joke'; end if;
 
   if p_value = 0 then
     delete from public.votes v where v.joke_id = p_joke and v.device_id = p_device;
@@ -211,28 +246,31 @@ begin
   return query select j.up_count, j.down_count from public.jokes j where j.id = p_joke;
 end $$;
 
--- Witz posten. Gibt die neue ID zurück.
-create function public.post_joke(p_device uuid, p_name text, p_category text, p_body text)
+-- Witz posten: NUR mit Konto. Der Name kommt aus dem Profil. Gibt die neue ID zurück.
+create function public.post_joke(p_device uuid, p_category text, p_body text)
 returns bigint
 language plpgsql security definer set search_path = public, extensions as $$
 declare
   h      text := public.client_ip_hash();
-  v_name text := trim(coalesce(p_name, ''));
+  v_user uuid := auth.uid();
+  v_name text;
   v_body text := trim(coalesce(p_body, ''));
   v_norm text;
   v_cat  int;
   v_dup  bigint;
   v_id   bigint;
 begin
+  if v_user is null then raise exception 'not_logged_in'; end if;
+  select p.username into v_name from public.profiles p where p.id = v_user;
+  if v_name is null then raise exception 'not_logged_in'; end if;
   if p_device is null then raise exception 'invalid_device'; end if;
-  if char_length(v_name) not between 2 and 24 then raise exception 'invalid_name'; end if;
   if char_length(v_body) not between 10 and 500 then raise exception 'invalid_body'; end if;
 
   select c.id into v_cat from public.categories c where c.slug = p_category;
   if v_cat is null then raise exception 'invalid_category'; end if;
 
-  -- max. 10 Witze pro Gerät und 20 pro IP in 24 Stunden
-  if (select count(*) from public.jokes j where j.author_device = p_device and j.created_at > now() - interval '24 hours') >= 10
+  -- max. 10 Witze pro Konto und 20 pro IP in 24 Stunden
+  if (select count(*) from public.jokes j where j.author_user = v_user and j.created_at > now() - interval '24 hours') >= 10
      or (select count(*) from public.jokes j where j.ip_hash = h and j.created_at > now() - interval '24 hours') >= 20 then
     raise exception 'post_limit';
   end if;
@@ -248,11 +286,24 @@ begin
     raise exception 'duplicate' using detail = v_dup::text;
   end if;
 
-  insert into public.jokes (category_id, body, author_name, author_device, ip_hash)
-  values (v_cat, v_body, v_name, p_device, h)
+  insert into public.jokes (category_id, body, author_name, author_device, author_user, ip_hash)
+  values (v_cat, v_body, v_name, p_device, v_user, h)
   returning jokes.id into v_id;
   return v_id;
 end $$;
+
+-- Ist ein Benutzername noch frei? (für die Registrierung)
+create function public.username_available(p_name text) returns boolean
+language sql stable security definer set search_path = public as $$
+  select trim(coalesce(p_name, '')) ~ '^[A-Za-z0-9_.äöüÄÖÜß]{3,20}$'
+     and not exists (select 1 from public.profiles p where lower(p.username) = lower(trim(p_name)))
+$$;
+
+-- Eigenes Profil (nach dem Anmelden)
+create function public.my_profile() returns table (username text)
+language sql stable security definer set search_path = public as $$
+  select p.username from public.profiles p where p.id = auth.uid()
+$$;
 
 -- Melden. Ab 3 Meldungen von verschiedenen Anschlüssen ausgeblendet,
 -- nach einer Freigabe durch die Moderation erst ab 10.
@@ -342,6 +393,7 @@ end $$;
 -- Besucher (anon) dürfen keine Tabelle direkt lesen oder schreiben, nur die Funktionen aufrufen.
 
 alter table public.settings   enable row level security;
+alter table public.profiles   enable row level security;
 alter table public.categories enable row level security;
 alter table public.jokes      enable row level security;
 alter table public.votes      enable row level security;
@@ -360,7 +412,9 @@ grant execute on function
   public.get_unrated(uuid, bigint[], int),
   public.find_similar(text),
   public.cast_vote(uuid, bigint, int),
-  public.post_joke(uuid, text, text, text),
+  public.post_joke(uuid, text, text),
+  public.username_available(text),
+  public.my_profile(),
   public.report_joke(uuid, bigint),
   public.admin_check(text),
   public.admin_list(text, text),

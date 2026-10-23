@@ -68,6 +68,18 @@
     joke_not_found: "Diesen Witz gibt es nicht mehr.",
     post_limit: "Du hast heute schon 10 Witze gepostet. Morgen geht es weiter.",
     invalid_name: "Dein Name braucht 2 bis 24 Zeichen.",
+    not_logged_in: "Bitte melde dich an, um Witze zu posten.",
+    invalid_username: "Der Benutzername braucht 3 bis 20 Zeichen: Buchstaben, Zahlen, Punkt oder Unterstrich.",
+    username_taken: "Dieser Benutzername ist schon vergeben.",
+    invalid_email: "Bitte gib eine gültige E-Mail-Adresse ein.",
+    password_short: "Das Passwort braucht mindestens 8 Zeichen.",
+    weak_password: "Das Passwort ist zu schwach. Nimm mindestens 8 Zeichen.",
+    email_exists: "Mit dieser E-Mail gibt es schon ein Konto. Melde dich an.",
+    invalid_credentials: "E-Mail oder Passwort stimmt nicht.",
+    email_not_confirmed: "Bitte bestätige zuerst deine E-Mail-Adresse über den Link in deinem Postfach.",
+    consent_missing: "Bitte bestätige, dass du die Datenschutzerklärung gelesen hast.",
+    email_rate_limit: "Gerade wurden zu viele E-Mails verschickt. Versuch es in einer Stunde noch einmal.",
+    password_mismatch: "Die beiden Passwörter stimmen nicht überein.",
     invalid_body: "Ein Witz braucht 10 bis 500 Zeichen.",
     invalid_category: "Wähle eine Kategorie.",
     not_admin: "Der Schlüssel stimmt nicht.",
@@ -75,16 +87,97 @@
   };
   const errorText = (e) => ERRORS[e && e.code] || "Das hat nicht geklappt. Versuch es noch einmal.";
 
+  /* ───────── Konto (Supabase Auth, ohne Fremdbibliothek) ───────── */
+  const SITE_URL = location.href.split("#")[0].split("?")[0];
+  const USERNAME_RE = /^[A-Za-z0-9_.äöüÄÖÜß]{3,20}$/;
+  let AUTH = store.get("auth", null); // { access_token, refresh_token, expires_at, email, username } bzw. { demo: true, … }
+  if (AUTH && LIVE === Boolean(AUTH.demo)) AUTH = null;     // Demo-Konto nicht im Live-Modus verwenden und umgekehrt
+  function setAuth(a) { AUTH = a; store.set("auth", a); if (typeof renderNav === "function") renderNav(route().view); }
+  const authError = (code) => { const e = new Error(code); e.code = code; return e; };
+  function mapAuthError(data, status) {
+    const c = data.error_code || data.code || data.error || "";
+    const m = String(data.msg || data.error_description || data.message || "").toLowerCase();
+    if (c === "email_not_confirmed" || m.includes("not confirmed")) return "email_not_confirmed";
+    if (c === "invalid_credentials" || c === "invalid_grant" || m.includes("invalid login")) return "invalid_credentials";
+    if (c === "weak_password" || m.includes("password should")) return "weak_password";
+    if (c === "user_already_exists" || c === "email_exists" || m.includes("already registered")) return "email_exists";
+    if (c === "email_address_invalid" || c === "validation_failed" || m.includes("invalid format")) return "invalid_email";
+    if (String(c).includes("rate_limit") || status === 429) return "email_rate_limit";
+    return "auth_failed";
+  }
+  async function authReq(path, { method = "POST", body, token } = {}) {
+    const headers = { "Content-Type": "application/json", apikey: CFG.supabaseAnonKey };
+    if (token) headers.Authorization = "Bearer " + token;
+    let res;
+    try { res = await fetch(CFG.supabaseUrl.replace(/\/$/, "") + "/auth/v1/" + path, { method, headers, body: body ? JSON.stringify(body) : undefined }); }
+    catch (e) { throw authError("network"); }
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) { const e = authError(mapAuthError(data, res.status)); e.status = res.status; throw e; }
+    return data;
+  }
+  async function startSession(data) {
+    const a = {
+      access_token: data.access_token, refresh_token: data.refresh_token,
+      expires_at: Number(data.expires_at) || Math.floor(Date.now() / 1000) + Number(data.expires_in || 3600),
+      email: (data.user && data.user.email) || "", username: "",
+    };
+    AUTH = a; // vorläufig, damit my_profile mit Token läuft
+    try { const r = (await rpc("my_profile", {}))[0]; a.username = (typeof r === "string" ? r : r && r.username) || ""; } catch (e) { /* Name folgt beim nächsten Laden */ }
+    setAuth(a);
+  }
+  let refreshing = null;
+  async function getToken() {
+    if (!LIVE || !AUTH || AUTH.demo) return null;
+    if (AUTH.expires_at * 1000 > Date.now() + 60000) return AUTH.access_token;
+    if (!refreshing) {
+      refreshing = authReq("token?grant_type=refresh_token", { body: { refresh_token: AUTH.refresh_token } })
+        .then((d) => { setAuth({ ...AUTH, access_token: d.access_token, refresh_token: d.refresh_token, expires_at: Number(d.expires_at) || Math.floor(Date.now() / 1000) + Number(d.expires_in || 3600) }); })
+        .catch(() => setAuth(null))
+        .finally(() => { refreshing = null; });
+    }
+    await refreshing;
+    return AUTH ? AUTH.access_token : null;
+  }
+  const liveAuth = {
+    async signUp(username, email, password) {
+      if (!(await rpc("username_available", { p_name: username }))) throw authError("username_taken");
+      const data = await authReq("signup?redirect_to=" + encodeURIComponent(SITE_URL), { body: { email, password, data: { username } } });
+      if (data.access_token) { await startSession(data); return { confirmed: true }; } // E-Mail-Bestätigung abgeschaltet
+      const user = data.user || data;
+      if (Array.isArray(user.identities) && user.identities.length === 0) throw authError("email_exists");
+      return { confirmed: false };
+    },
+    async signIn(email, password) { await startSession(await authReq("token?grant_type=password", { body: { email, password } })); },
+    async signOut() { const t = AUTH && AUTH.access_token; setAuth(null); if (t) authReq("logout", { token: t }).catch(() => {}); },
+    async recover(email) { await authReq("recover?redirect_to=" + encodeURIComponent(SITE_URL), { body: { email } }); },
+    async updatePassword(password) { const t = await getToken(); if (!t) throw authError("not_logged_in"); await authReq("user", { method: "PUT", body: { password }, token: t }); },
+  };
+  // Rückkehr aus der Bestätigungs- oder Passwort-E-Mail: Supabase hängt die Anmeldung an die Adresse (#access_token=…)
+  async function handleAuthRedirect() {
+    const h = location.hash;
+    if (!/access_token=|error_description=/.test(h)) return null;
+    const p = new URLSearchParams(h.replace(/^#\/?/, ""));
+    history.replaceState(null, "", location.pathname + location.search + "#/");
+    if (p.get("error_description")) return { error: p.get("error_code") || "link_invalid" };
+    const data = { access_token: p.get("access_token"), refresh_token: p.get("refresh_token"), expires_at: p.get("expires_at"), expires_in: p.get("expires_in") };
+    try { data.user = await authReq("user", { method: "GET", token: data.access_token }); } catch (e) { return { error: "link_invalid" }; }
+    await startSession(data);
+    return { type: p.get("type") };
+  }
+
   /* ───────── Live-API (Supabase) ───────── */
-  async function rpc(fn, args) {
+  async function rpc(fn, args, retried) {
     const key = CFG.supabaseAnonKey;
     const headers = { "Content-Type": "application/json", apikey: key };
-    if (key.startsWith("eyJ")) headers.Authorization = "Bearer " + key; // alte JWT-Keys
+    const token = await getToken();
+    if (token) headers.Authorization = "Bearer " + token;          // angemeldet: Konto mitschicken
+    else if (key.startsWith("eyJ")) headers.Authorization = "Bearer " + key; // alte JWT-Keys
     let res;
     try {
       res = await fetch(CFG.supabaseUrl.replace(/\/$/, "") + "/rest/v1/rpc/" + fn, { method: "POST", headers, body: JSON.stringify(args) });
     } catch (e) { const err = new Error("network"); err.code = "network"; throw err; }
     const data = await res.json().catch(() => null);
+    if (res.status === 401 && token && !retried) { setAuth(null); return rpc(fn, args, true); } // abgelaufene Anmeldung: als Gast weiter
     if (!res.ok) { const err = new Error((data && data.message) || "request_failed"); err.code = data && data.message; err.details = data && data.details; throw err; }
     return data;
   }
@@ -99,8 +192,8 @@
     async unrated(exclude) { return (await rpc("get_unrated", { p_device: DEVICE, p_exclude: exclude, p_limit: 10 })).map(fromRow); },
     async similar(text) { const rows = await rpc("find_similar", { p_body: text }); return rows.length ? { id: Number(rows[0].id), text: rows[0].body, match: rows[0].match } : null; },
     async vote(id, value) { const rows = await rpc("cast_vote", { p_device: DEVICE, p_joke: id, p_value: value }); return { up: rows[0].up_count, down: rows[0].down_count }; },
-    async post(name, cat, text) {
-      try { return Number(await rpc("post_joke", { p_device: DEVICE, p_name: name, p_category: cat, p_body: text })); }
+    async post(cat, text) {
+      try { return Number(await rpc("post_joke", { p_device: DEVICE, p_category: cat, p_body: text })); }
       catch (e) { if (e.code === "duplicate") e.duplicateId = Number(e.details); throw e; }
     },
     async report(id) { await rpc("report_joke", { p_device: DEVICE, p_joke: id }); },
@@ -170,7 +263,9 @@
         const n = all().find((x) => x.id === id);
         return wait({ up: n.up, down: n.down });
       },
-      async post(name, cat, text) {
+      async post(cat, text) {
+        if (!AUTH) throw fail("not_logged_in");
+        const name = AUTH.username;
         const dup = await this.similar(text);
         if (dup) { const e = fail("duplicate"); e.duplicateId = dup.id; throw e; }
         const id = Date.now();
@@ -201,7 +296,29 @@
     };
   })();
 
+  // Demo-Konten: nur in diesem Browser, kein echtes Konto und kein gespeichertes Passwort
+  const demoAuth = {
+    async signUp(username, email) {
+      const accts = store.get("demo_accounts", {});
+      if (Object.values(accts).some((a) => a.username.toLowerCase() === username.toLowerCase())) throw authError("username_taken");
+      if (accts[email.toLowerCase()]) throw authError("email_exists");
+      accts[email.toLowerCase()] = { username };
+      store.set("demo_accounts", accts);
+      setAuth({ demo: true, email, username });
+      return { confirmed: true };
+    },
+    async signIn(email) {
+      const a = store.get("demo_accounts", {})[email.toLowerCase()];
+      if (!a) throw authError("invalid_credentials");
+      setAuth({ demo: true, email, username: a.username });
+    },
+    async signOut() { setAuth(null); },
+    async recover() {},
+    async updatePassword() {},
+  };
+
   const API = LIVE ? liveApi : demo;
+  const AUTH_API = LIVE ? liveAuth : demoAuth;
 
   /* ───────── Zustand & Navigation ───────── */
   const S = {
@@ -225,8 +342,8 @@
     $("#nav").innerHTML = items.map(([href, v, l]) => `<a href="${href}" ${view === v ? 'aria-current="page"' : ""}>${l}</a>`).join("");
     $("#listControls").style.display = view === "list" ? "grid" : "none";
     $("#postBtn").hidden = view === "swipe" || view === "admin";
-    const name = store.get("name", "");
-    $("#who").textContent = name ? "@" + name : "Name festlegen";
+    $("#who").textContent = AUTH ? "@" + (AUTH.username || "Konto") : "Anmelden";
+    $("#who").title = AUTH ? "Dein Konto" : "Anmelden oder registrieren (nur zum Posten nötig)";
   }
   function renderChips() {
     $("#chips").innerHTML = [[null, "Alle"], ...Object.entries(CATS)].map(([k, v]) => `<button class="chip" aria-pressed="${k === S.cat}" data-cat="${k || ""}">${v}</button>`).join("");
@@ -554,7 +671,6 @@
   function openSheet(id) { $(id).hidden = false; const f = $(id).querySelector("textarea") || $(id).querySelector("input"); if (f) setTimeout(() => f.focus(), 30); }
   function closeSheets() { document.querySelectorAll(".scrim").forEach((s) => (s.hidden = true)); }
   function toast(m) { const t = $("#toast"); t.textContent = m; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => (t.hidden = true), 2600); }
-  function validName(n) { return n.length >= 2 && n.length <= 24; }
 
   /* ───────── Ereignisse ───────── */
   let reportId = null;
@@ -592,15 +708,77 @@
     S.rows = S.rows.filter((j) => j.id !== id);
     if (route().view === "detail") location.hash = "#/"; else render();
   });
-  $("#who").addEventListener("click", () => { $("#nameInput").value = store.get("name", ""); $("#nameErr").textContent = ""; openSheet("#nameSheet"); });
-  $("#nameForm").addEventListener("submit", (e) => {
+  /* ───────── Anmelden, Registrieren, Passwort ───────── */
+  let authMode = "login", afterLogin = null;
+  function openAuth(mode, reason, next) {
+    authMode = mode; afterLogin = next || null;
+    $("#authReason").textContent = reason || "Lesen, Liken und Bewerten geht auch ohne Konto. Zum Posten brauchst du eins.";
+    $("#authErr").textContent = ""; $("#authOk").hidden = true; $("#authFields").hidden = false;
+    drawAuthMode(); openSheet("#authSheet");
+  }
+  function drawAuthMode() {
+    const titles = { login: "Anmelden", signup: "Registrieren", forgot: "Passwort vergessen" };
+    $("#authTitle").textContent = titles[authMode];
+    $("#authTabs").hidden = authMode === "forgot";
+    document.querySelectorAll("[data-authmode]").forEach((b) => b.setAttribute("aria-selected", b.dataset.authmode === authMode));
+    $("#authNameRow").hidden = authMode !== "signup";
+    $("#authConsentRow").hidden = authMode !== "signup";
+    $("#authPwRow").hidden = authMode === "forgot";
+    $("#authPw").autocomplete = authMode === "signup" ? "new-password" : "current-password";
+    $("#forgotBtn").hidden = authMode !== "login";
+    $("#authSubmit").textContent = { login: "Anmelden", signup: "Konto erstellen", forgot: "Link schicken" }[authMode];
+    $("#authDemo").hidden = LIVE;
+  }
+  $("#who").addEventListener("click", () => {
+    if (!AUTH) { openAuth("login"); return; }
+    $("#accountInfo").textContent = `Angemeldet als @${AUTH.username || "…"}${AUTH.email ? " (" + AUTH.email + ")" : ""}.`;
+    $("#accountPw").hidden = !LIVE;
+    openSheet("#accountSheet");
+  });
+  $("#authForm").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-authmode]");
+    if (b) { authMode = b.dataset.authmode; $("#authErr").textContent = ""; drawAuthMode(); }
+  });
+  $("#forgotBtn").addEventListener("click", () => { authMode = "forgot"; $("#authErr").textContent = ""; drawAuthMode(); });
+  $("#authForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const n = $("#nameInput").value.trim();
-    if (!validName(n)) { $("#nameErr").textContent = ERRORS.invalid_name; return; }
-    store.set("name", n); closeSheets(); renderNav(route().view); toast("Gespeichert.");
+    const name = $("#authName").value.trim(), email = $("#authEmail").value.trim(), pw = $("#authPw").value, err = $("#authErr");
+    err.textContent = "";
+    if (authMode === "signup" && !USERNAME_RE.test(name)) { err.textContent = ERRORS.invalid_username; return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = ERRORS.invalid_email; return; }
+    if (authMode !== "forgot" && pw.length < (authMode === "signup" ? 8 : 1)) { err.textContent = ERRORS.password_short; return; }
+    if (authMode === "signup" && !$("#authConsent").checked) { err.textContent = ERRORS.consent_missing; return; }
+    const btn = $("#authSubmit"), label = btn.textContent; btn.disabled = true; btn.textContent = "Einen Moment …";
+    try {
+      if (authMode === "login") {
+        await AUTH_API.signIn(email, pw);
+        closeSheets(); toast(`Hallo @${AUTH.username}!`); render();
+        if (afterLogin === "post") $("#postBtn").click();
+      } else if (authMode === "signup") {
+        const r = await AUTH_API.signUp(name, email, pw);
+        if (r.confirmed) { closeSheets(); toast(`Willkommen, @${AUTH.username}!`); render(); if (afterLogin === "post") $("#postBtn").click(); }
+        else { $("#authFields").hidden = true; $("#authOk").hidden = false; $("#authOk").textContent = `Fast geschafft: Wir haben dir eine E-Mail an ${email} geschickt. Klick auf den Link darin, dann bist du angemeldet. Schau auch im Spam-Ordner nach.`; }
+      } else {
+        await AUTH_API.recover(email);
+        $("#authFields").hidden = true; $("#authOk").hidden = false;
+        $("#authOk").textContent = LIVE ? `Falls es ein Konto mit ${email} gibt, ist jetzt eine E-Mail mit einem Link zum Zurücksetzen unterwegs.` : "Im Demo-Modus gibt es keine Passwörter. Melde dich einfach mit deiner E-Mail an.";
+      }
+    } catch (ex) { err.textContent = errorText(ex); }
+    finally { btn.disabled = false; btn.textContent = label; }
+  });
+  $("#logoutBtn").addEventListener("click", async () => { await AUTH_API.signOut(); closeSheets(); toast("Abgemeldet."); render(); });
+  $("#accountPw").addEventListener("click", () => { closeSheets(); $("#pwErr").textContent = ""; openSheet("#pwSheet"); });
+  $("#pwForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const a = $("#pwNew").value, b = $("#pwNew2").value, err = $("#pwErr");
+    if (a.length < 8) { err.textContent = ERRORS.password_short; return; }
+    if (a !== b) { err.textContent = ERRORS.password_mismatch; return; }
+    try { await AUTH_API.updatePassword(a); $("#pwNew").value = $("#pwNew2").value = ""; closeSheets(); toast("Neues Passwort gespeichert."); }
+    catch (ex) { err.textContent = errorText(ex); }
   });
   $("#postBtn").addEventListener("click", () => {
-    $("#postName").value = store.get("name", "");
+    if (!AUTH) { openAuth("login", "Zum Posten brauchst du ein Konto. Lesen, Liken und Bewerten geht auch ohne.", "post"); return; }
+    $("#postAs").textContent = `Du postest als @${AUTH.username}.`;
     $("#postErr").textContent = "";
     showDup(null); checkSimilar();
     openSheet("#postSheet");
@@ -609,13 +787,11 @@
   $("#postText").addEventListener("input", checkSimilar);
   $("#postForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const name = $("#postName").value.trim(), text = $("#postText").value.trim(), cat = $("#postCat").value, err = $("#postErr");
-    if (!validName(name)) { err.textContent = ERRORS.invalid_name; return; }
+    const text = $("#postText").value.trim(), cat = $("#postCat").value, err = $("#postErr");
     if (text.length < 10 || text.length > 500) { err.textContent = ERRORS.invalid_body; return; }
     const btn = $("#postSubmit"); btn.disabled = true; btn.textContent = "Wird veröffentlicht …"; err.textContent = "";
     try {
-      const id = await API.post(name, cat, text);
-      store.set("name", name);
+      const id = await API.post(cat, text);
       $("#postText").value = ""; closeSheets();
       S.rows = []; S.range = "day"; S.cat = null;
       document.querySelectorAll("[data-range]").forEach((b) => b.setAttribute("aria-selected", b.dataset.range === "day")); renderChips();
@@ -623,6 +799,7 @@
       toast("Veröffentlicht. Teil ihn, damit er Stimmen bekommt!");
     } catch (ex) {
       if (ex.code === "duplicate") { showDup({ id: ex.duplicateId }); }
+      else if (ex.code === "not_logged_in") { setAuth(null); closeSheets(); openAuth("login", ERRORS.not_logged_in, "post"); }
       else err.textContent = errorText(ex);
     } finally { btn.textContent = "Veröffentlichen"; btn.disabled = !$("#dupBox").hidden; }
   });
@@ -643,9 +820,21 @@
     else if (e.key === "ArrowLeft") { e.preventDefault(); decide(-1); }
     else if (e.key === "ArrowDown") { e.preventDefault(); decide(0); }
   });
-  window.addEventListener("hashchange", () => { window.scrollTo({ top: 0 }); if (route().view === "swipe") { S.queue = []; S.seen = new Set(); S.rated = 0; S.swipeDone = false; } render(); });
+  window.addEventListener("hashchange", () => {
+    if (LIVE && /access_token=|error_description=/.test(location.hash)) { handleAuthLink(); return; } // Link aus der E-Mail im selben Tab
+    window.scrollTo({ top: 0 }); if (route().view === "swipe") { S.queue = []; S.seen = new Set(); S.rated = 0; S.swipeDone = false; } render();
+  });
 
   $("#demoBanner").hidden = LIVE;
   renderChips();
-  render();
+  function handleAuthLink() {
+    return (LIVE ? handleAuthRedirect() : Promise.resolve(null)).then((r) => {
+      render();
+      if (!r) return;
+      if (r.error) { toast("Der Link ist abgelaufen oder ungültig. Melde dich an oder fordere einen neuen an."); openAuth("login"); }
+      else if (r.type === "recovery") { $("#pwErr").textContent = ""; openSheet("#pwSheet"); toast("Lege jetzt ein neues Passwort fest."); }
+      else toast(`E-Mail bestätigt. Willkommen, @${AUTH ? AUTH.username : ""}!`);
+    }).catch(() => render());
+  }
+  handleAuthLink();
 })();

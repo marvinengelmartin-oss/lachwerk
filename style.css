@@ -147,12 +147,15 @@ ol.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 /* Formulare & Sheets */
 .form { display: grid; gap: 12px; }
 .form label, .sheet label { font-size: .82rem; font-weight: 600; display: grid; gap: 4px; }
-input[type=text], input[type=password], select, textarea { font: inherit; font-weight: 400; color: var(--ink); background: var(--bg); border: 1.5px solid var(--line); border-radius: 10px; padding: 10px; }
+input[type=text], input[type=password], input[type=email], select, textarea { font: inherit; font-weight: 400; color: var(--ink); background: var(--bg); border: 1.5px solid var(--line); border-radius: 10px; padding: 10px; }
 textarea { min-height: 120px; resize: vertical; }
 .scrim { position: fixed; inset: 0; background: var(--scrim); z-index: 10; display: flex; align-items: flex-end; justify-content: center; }
 .sheet { background: var(--surface); width: 100%; max-width: 520px; border-radius: 20px 20px 0 0; max-height: 92vh; overflow: auto;
   padding: 20px max(20px, env(safe-area-inset-right, 0px)) calc(20px + env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-left, 0px)); display: grid; gap: 12px; }
 .err { color: var(--down); font-size: .85rem; margin: 0; }
+.sheet label.check { display: flex; align-items: flex-start; gap: 8px; font-weight: 500; }
+.sheet label.check input { margin-top: 3px; }
+#authOk { margin: 0; }
 .dup { background: color-mix(in srgb, var(--down) 10%, var(--surface)); border: 1.5px solid var(--down); border-radius: 12px; padding: 10px 12px; display: grid; gap: 6px; font-size: .88rem; }
 .dup q { display: block; white-space: pre-line; color: var(--muted); quotes: none; }
 .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(84px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 999px; font-size: .9rem; z-index: 20; max-width: calc(100% - 32px); text-align: center; }

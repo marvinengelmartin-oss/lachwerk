@@ -1,6 +1,6 @@
 # Lachwerk
 
-Witze-Web-App **ohne Anmeldung**: Jeder kann Witze posten, liken und im Swipe-Modus neue Witze bewerten.
+Witze-Web-App: Lesen, Liken und Bewerten im Swipe-Modus geht **ohne Konto**. Zum **Posten** registriert man sich mit E-Mail und Passwort.
 Rankings für **Heute**, **Woche** und **Alltime**. Reine HTML/CSS/JS-Dateien, kein Build-Schritt.
 
 ## In 5 Minuten online (Demo-Modus)
@@ -35,6 +35,13 @@ GitHub Pages kann nur Dateien ausliefern und nichts speichern. Die Daten liegen 
    ```
    Der anon-Key ist öffentlich und darf dort stehen. Den **service_role / secret** Key niemals eintragen.
 
+6. Unter **Authentication → URL Configuration**:
+   - **Site URL:** `https://DEIN-NAME.github.io/lachwerk/`
+   - **Redirect URLs:** dieselbe Adresse hinzufügen
+   Dorthin führen die Links in den Bestätigungs- und Passwort-E-Mails.
+7. Optional: Unter **Authentication → Emails** die Texte der E-Mails auf Deutsch anpassen.
+   Der eingebaute E-Mail-Versand von Supabase schafft nur wenige E-Mails pro Stunde. Für mehr Nutzer unter **Authentication → SMTP** einen eigenen Versand eintragen (z. B. Brevo, kostenlos bis 300/Tag).
+
 Nach etwa einer Minute ist die Seite live. Der gelbe Demo-Hinweis unten verschwindet.
 
 ## Weitere Witze nachladen
@@ -47,16 +54,17 @@ Bei einer Neueinrichtung brauchst du die Datei nicht, `supabase.sql` enthält be
 
 Seite mit `#/admin` am Ende aufrufen, z. B. `https://DEIN-NAME.github.io/lachwerk/#/admin`, und den Admin-Schlüssel eingeben.
 Dort siehst du gemeldete und ausgeblendete Witze und kannst sie **freigeben** oder **entfernen**.
-Im Demo-Modus lautet der Schlüssel `demo-moderation`.
+Im Demo-Modus lautet der Schlüssel `demo-moderation`. Konten gelten dort nur im jeweiligen Browser und haben kein echtes Passwort.
 
 ## So funktioniert es ohne Anmeldung
 
 | Thema | Umsetzung |
 |---|---|
-| Wer bin ich? | Jeder Browser bekommt eine zufällige Geräte-ID (localStorage). Der Anzeigename wird beim ersten Posten abgefragt und gemerkt. |
+| Konto | Nur zum Posten nötig. Registrierung mit Benutzername, E-Mail und Passwort über Supabase Auth, mit E-Mail-Bestätigung und „Passwort vergessen“. Der Benutzername erscheint unter den Witzen. |
+| Gäste | Jeder Browser bekommt eine zufällige Geräte-ID (localStorage). Damit funktionieren Liken, Bewerten und Melden ohne Konto. |
 | Ein Vote pro Person | Pro Witz und Geräte-ID genau eine Stimme. Zusätzlich max. 5 Stimmen pro Witz und Internetanschluss, max. 300 Stimmen pro Stunde und Anschluss. |
-| Eigene Witze | Können nicht selbst bewertet werden. |
-| Posten | Max. 10 Witze pro Gerät und 20 pro Anschluss in 24 Stunden. |
+| Eigene Witze | Können nicht selbst bewertet werden, auch nicht von einem anderen Gerät aus. |
+| Posten | Nur mit Konto. Max. 10 Witze pro Konto und 20 pro Anschluss in 24 Stunden. |
 | Duplikate | Ähnlichkeitsvergleich (pg_trgm). Ab 60 % Übereinstimmung wird das Posten abgelehnt und das Original verlinkt. Schon beim Tippen erscheint ein Hinweis. |
 | Ranking | Wilson-Score: fair auch bei wenigen Stimmen. Heute = 24 h, Woche = 7 Tage, Alltime = ab 20 Stimmen. Ist ein Zeitraum leer, zeigt die Seite automatisch die Besten der Woche bzw. aller Zeiten. |
 | Swipe-Modus | Zeigt zuerst Witze mit unter 20 Stimmen, damit jeder neue Witz eine Chance bekommt. |
@@ -64,8 +72,8 @@ Im Demo-Modus lautet der Schlüssel `demo-moderation`.
 | Teilen | WhatsApp-Link, Link teilen und „Als Bild teilen“ (Story-Bild 1080×1920, wird im Browser erzeugt). |
 | Datenschutz | Keine Cookies, keine externen Schriften, kein Tracking. IP-Adressen werden nur gesalzen gehasht gespeichert. Besucher können keine Tabelle direkt lesen, nur die freigegebenen Funktionen aufrufen. |
 
-**Grenzen der Version ohne Anmeldung:** Wer es darauf anlegt, kann mit gelöschtem Browser-Speicher erneut abstimmen. Das IP-Limit bremst das stark, verhindert es aber nicht ganz.
-Wenn die Seite wächst: Cloudflare Turnstile (unsichtbares Captcha) ergänzen oder auf die Next.js-Version mit Konten umsteigen.
+**Grenzen bei Gast-Stimmen:** Wer es darauf anlegt, kann mit gelöschtem Browser-Speicher erneut abstimmen. Das IP-Limit bremst das stark, verhindert es aber nicht ganz.
+Wenn die Seite wächst: Cloudflare Turnstile (unsichtbares Captcha) ergänzen oder auch das Liken an ein Konto binden.
 
 ## Dateien
 

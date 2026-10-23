@@ -21,7 +21,7 @@
     <header>
       <div class="bar">
         <a class="logo" href="#/" aria-label="Lachwerk – zur Bestenliste">Lach<span>werk</span></a>
-        <button class="who" id="who" title="Deinen Anzeigenamen ändern">Gast</button>
+        <button class="who" id="who" title="Anmelden oder registrieren">Anmelden</button>
       </div>
       <nav class="nav" id="nav" aria-label="Hauptnavigation"></nav>
       <div id="listControls" style="display:grid;gap:10px">
@@ -47,7 +47,7 @@
   <div class="scrim" id="postSheet" hidden>
     <form class="sheet" id="postForm" novalidate>
       <h2>Neuer Witz</h2>
-      <label>Dein Name (wird angezeigt)<input type="text" id="postName" maxlength="24" autocomplete="nickname" placeholder="z. B. Pointenpaul"></label>
+      <p class="muted small" id="postAs"></p>
       <label>Kategorie<select id="postCat"></select></label>
       <label>Dein Witz<textarea id="postText" maxlength="500" placeholder="Was ist …"></textarea></label>
       <div id="dupBox" hidden></div>
@@ -57,13 +57,51 @@
     </form>
   </div>
 
-  <div class="scrim" id="nameSheet" hidden>
-    <form class="sheet" id="nameForm" novalidate>
-      <h2>Dein Anzeigename</h2>
-      <p class="muted small">Erscheint unter deinen Witzen. Ein Konto brauchst du nicht.</p>
-      <label>Name<input type="text" id="nameInput" maxlength="24" autocomplete="nickname"></label>
-      <p class="err" id="nameErr"></p>
-      <div class="row end"><button type="button" class="btn ghost" data-close>Abbrechen</button><button class="btn">Speichern</button></div>
+  <div class="scrim" id="authSheet" hidden>
+    <form class="sheet" id="authForm" novalidate>
+      <h2 id="authTitle">Anmelden</h2>
+      <p class="muted small" id="authReason"></p>
+      <div id="authFields" class="form">
+        <div class="tabs" role="tablist" id="authTabs">
+          <button type="button" role="tab" data-authmode="login" aria-selected="true">Anmelden</button>
+          <button type="button" role="tab" data-authmode="signup" aria-selected="false">Registrieren</button>
+        </div>
+        <label id="authNameRow" hidden>Benutzername (wird unter deinen Witzen angezeigt)<input type="text" id="authName" maxlength="20" autocomplete="username" placeholder="z. B. Pointenpaul"></label>
+        <label>E-Mail<input type="email" id="authEmail" autocomplete="email" inputmode="email"></label>
+        <label id="authPwRow">Passwort<input type="password" id="authPw" autocomplete="current-password" minlength="8"></label>
+        <label class="check" id="authConsentRow" hidden><input type="checkbox" id="authConsent"> <span>Ich habe die <a href="datenschutz.html" target="_blank" rel="noopener">Datenschutzerklärung</a> gelesen.</span></label>
+        <p class="muted small" id="authDemo" hidden>Demo-Modus: Das Konto gilt nur in diesem Browser. Ein Passwort wird nicht gespeichert.</p>
+        <p class="err" id="authErr"></p>
+        <div class="row end">
+          <button type="button" class="link" id="forgotBtn">Passwort vergessen?</button>
+          <button type="button" class="btn ghost" data-close>Abbrechen</button>
+          <button class="btn accent" id="authSubmit">Anmelden</button>
+        </div>
+      </div>
+      <p class="notice" id="authOk" hidden></p>
+    </form>
+  </div>
+
+  <div class="scrim" id="accountSheet" hidden>
+    <div class="sheet">
+      <h2>Dein Konto</h2>
+      <p class="muted small" id="accountInfo"></p>
+      <div class="row end">
+        <button type="button" class="btn ghost" id="accountPw">Passwort ändern</button>
+        <button type="button" class="btn ghost" data-close>Schließen</button>
+        <button type="button" class="btn" id="logoutBtn">Abmelden</button>
+      </div>
+      <p class="muted small">Konto löschen? Schreib uns über die Adresse im <a href="impressum.html">Impressum</a>.</p>
+    </div>
+  </div>
+
+  <div class="scrim" id="pwSheet" hidden>
+    <form class="sheet" id="pwForm" novalidate>
+      <h2>Neues Passwort</h2>
+      <label>Neues Passwort<input type="password" id="pwNew" autocomplete="new-password" minlength="8"></label>
+      <label>Noch einmal<input type="password" id="pwNew2" autocomplete="new-password" minlength="8"></label>
+      <p class="err" id="pwErr"></p>
+      <div class="row end"><button type="button" class="btn ghost" data-close>Abbrechen</button><button class="btn accent">Speichern</button></div>
     </form>
   </div>
 
