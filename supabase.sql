@@ -430,7 +430,8 @@ insert into public.categories (slug, name, position) values
   ('schule',     'Schule',     4),
   ('buero',      'Büro',       5),
   ('nerd',       'Nerd',       6),
-  ('schwarz',    'Schwarzer Humor', 7);
+  ('schwarz',    'Schwarzer Humor', 7),
+  ('einzeiler',  'Einzeiler',  8);
 
 -- 360 Startwitze von der „Lachwerk“-Redaktion, vorgeplant über 35 Tage:
 -- Rund 5 Tage liegen in der Vergangenheit, danach erscheinen jeden Tag etwa 10 neue Witze.

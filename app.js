@@ -7,7 +7,7 @@
 
   const CFG = window.LACHWERK_CONFIG || {};
   const LIVE = Boolean(CFG.supabaseUrl && CFG.supabaseAnonKey);
-  const CATS = { flachwitze: "Flachwitze", wortspiele: "Wortspiele", tiere: "Tiere", schule: "Schule", buero: "Büro", nerd: "Nerd", schwarz: "Schwarzer Humor" };
+  const CATS = { flachwitze: "Flachwitze", wortspiele: "Wortspiele", tiere: "Tiere", schule: "Schule", buero: "Büro", nerd: "Nerd", schwarz: "Schwarzer Humor", einzeiler: "Einzeiler" };
   const RANGES = {
     day: { label: "Beste Witze der letzten 24 Stunden", best: "Tages&shy;bester" },
     week: { label: "Beste Witze der letzten 7 Tage", best: "Wochen&shy;bester" },
