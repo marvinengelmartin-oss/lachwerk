@@ -55,6 +55,7 @@ Bei einer Neueinrichtung brauchst du die Datei nicht, `supabase.sql` enthält be
 - `ruhrpott_witze.sql`: 25 Witze im Ruhrpott-Stil, erscheinen nach und nach über rund 10 Tage
 - `schwarzer_humor.sql`: Kategorie „Schwarzer Humor“ mit 17 Witzen, erscheinen über rund 9 Tage
 - `einzeiler.sql`: Kategorie „Einzeiler“ mit 30 kurzen Witzen, erscheinen über rund 12 Tage
+- `chef_sprueche.sql`: 25 Chef-Sprüche in der Kategorie „Büro“, erscheinen über rund 8 Tage
 
 Jeweils im SQL Editor ausführen. Vorhandene Witze werden übersprungen.
 
