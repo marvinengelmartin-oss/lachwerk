@@ -7,13 +7,17 @@
   <meta name="description" content="Witze posten, liken und mitentscheiden: Tagesbeste, Wochenbeste und die besten Witze aller Zeiten. Ohne Anmeldung.">
   <meta name="theme-color" content="#ffc928">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=9">
-  <!-- Vorschau beim Teilen (WhatsApp, Telegram …). Für beste Ergebnisse "og:image" auf die volle Adresse ändern,
-       z. B. https://DEIN-NAME.github.io/lachwerk/og-image.png -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-title" content="Lachwerk">
+  <link rel="canonical" href="https://lachwerk.github.io/">
+  <link rel="stylesheet" href="style.css?v=10">
+  <!-- Vorschau beim Teilen (WhatsApp, Telegram …) -->
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://lachwerk.github.io/">
   <meta property="og:title" content="Lachwerk – Die besten Witze des Tages">
   <meta property="og:description" content="Witze posten, liken und mitentscheiden, welcher Witz heute ganz oben steht.">
-  <meta property="og:image" content="og-image.png">
+  <meta property="og:image" content="https://lachwerk.github.io/og-image.png">
   <meta name="twitter:card" content="summary_large_image">
 </head>
 <body>
@@ -38,7 +42,7 @@
 
     <footer>
       <p class="demo-banner" id="demoBanner" hidden>Demo-Modus: Stimmen und Witze bleiben nur in deinem Browser. Wie du die Seite live schaltest, steht in der README.</p>
-      <nav><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a></nav>
+      <nav><a href="witze/">Witze-Sammlung</a><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a></nav>
     </footer>
   </div>
 
@@ -50,6 +54,7 @@
       <p class="muted small" id="postAs"></p>
       <label>Kategorie<select id="postCat"></select></label>
       <label>Dein Witz<textarea id="postText" maxlength="500" placeholder="Was ist …"></textarea></label>
+      <label class="check" id="postChallengeRow" hidden><input type="checkbox" id="postChallenge"> <span>Bei der Challenge „<b id="postChallengeName"></b>“ einreichen</span></label>
       <div id="dupBox" hidden></div>
       <p class="err" id="postErr"></p>
       <p class="muted small">Keine Beleidigungen, keine Werbung. Gemeldete Witze werden geprüft.</p>
@@ -87,6 +92,7 @@
       <h2>Dein Konto</h2>
       <p class="muted small" id="accountInfo"></p>
       <div class="row end">
+        <a class="btn ghost" id="accountProfile" href="#/" data-close>Mein Profil</a>
         <button type="button" class="btn ghost" id="accountPw">Passwort ändern</button>
         <button type="button" class="btn ghost" data-close>Schließen</button>
         <button type="button" class="btn" id="logoutBtn">Abmelden</button>
@@ -117,6 +123,6 @@
 
   <script src="config.js"></script>
   <script src="startwitze.js"></script>
-  <script src="app.js?v=9"></script>
+  <script src="app.js?v=10"></script>
 </body>
 </html>

@@ -8,7 +8,7 @@ Rankings für **Heute**, **Woche** und **Alltime**. Reine HTML/CSS/JS-Dateien, k
 1. Auf github.com ein neues Repository anlegen, z. B. `lachwerk` (öffentlich).
 2. **Add file → Upload files** und alle Dateien aus diesem Ordner hineinziehen. Danach **Commit changes**.
 3. **Settings → Pages → Build and deployment**: Source *Deploy from a branch*, Branch *main*, Ordner */ (root)*, **Save**.
-4. Nach ca. 1 Minute ist die Seite erreichbar unter `https://DEIN-NAME.github.io/lachwerk/`.
+4. Nach ca. 1 Minute ist die Seite erreichbar unter `https://lachwerk.github.io/`.
 
 Im Demo-Modus läuft alles sofort mit 360 Startwitzen. Jeden Tag erscheint unter „Heute“ automatisch eine neue Auswahl. Stimmen und neue Witze bleiben aber **nur im Browser des jeweiligen Besuchers**.
 Zum Ausprobieren reicht das. Für eine echte Community schaltest du den Live-Modus ein.
@@ -36,7 +36,7 @@ GitHub Pages kann nur Dateien ausliefern und nichts speichern. Die Daten liegen 
    Der anon-Key ist öffentlich und darf dort stehen. Den **service_role / secret** Key niemals eintragen.
 
 6. Unter **Authentication → URL Configuration**:
-   - **Site URL:** `https://DEIN-NAME.github.io/lachwerk/`
+   - **Site URL:** `https://lachwerk.github.io/`
    - **Redirect URLs:** dieselbe Adresse hinzufügen
    Dorthin führen die Links in den Bestätigungs- und Passwort-E-Mails.
 7. Optional: Unter **Authentication → Emails** die Texte der E-Mails auf Deutsch anpassen.
@@ -59,9 +59,28 @@ Bei einer Neueinrichtung brauchst du die Datei nicht, `supabase.sql` enthält be
 
 Jeweils im SQL Editor ausführen. Vorhandene Witze werden übersprungen.
 
+## Funktionen der Erweiterung
+
+Für eine schon eingerichtete Datenbank einmal `erweiterung.sql` im SQL Editor ausführen (bei Neueinrichtung steckt sie in `supabase.sql`).
+
+| Funktion | So funktioniert es |
+|---|---|
+| Witz des Tages | Jeden Abend um 20 Uhr (deutsche Zeit) wird der beste Witz der letzten 24 Stunden gekrönt. Ohne Zeitplan: Die Krönung passiert beim nächsten Seitenaufruf danach. Zu sehen unter `#/highlights`, das Story-Bild trägt dann die Krone. |
+| Reaktionen | 😂 🙄 💀 unter jedem Witz, eine pro Gerät. Daraus: „Lacher“, „Größter Seufzer“ und „Schwärzester“ der Woche. |
+| Duell | `#/duell`: zwei Witze, einer gewinnt. Eigene Elo-Wertung, beeinflusst das normale Ranking nicht. Duell-Champions ab 5 Duellen. |
+| Autoren | `#/autoren`: Witzbold der Woche und Alltime (Wilson-Score über alle Stimmen eines Autors, mind. 5 bzw. 20 Stimmen). |
+| Profile | `#/u/NAME`: Witze, Likes, Lacher-Quote und Abzeichen. Erreichbar über den Namen unter jedem Witz. |
+| Hinweise | Angemeldete Autoren sehen oben in der Bestenliste, wenn ihr Witz in den Top 3 ist, gekrönt wurde oder 10/25/50/100 … Likes geknackt hat. |
+| Serie | Wer an mehreren Tagen in Folge bewertet, sammelt eine Serie (🔥) mit Abzeichen nach 3, 7 und 30 Tagen. Nur im Browser gespeichert. |
+| Challenge | Wochenthema mit eigener Rangliste unter `#/challenge`. Beim Posten ankreuzen. Neue Challenges legst du unter `#/admin` → Challenge an. |
+| Statistik | `#/admin` → Statistik: Besucher (abstimmende Geräte), Stimmen, Reaktionen, Duelle, neue Witze und Konten pro Tag. |
+| Vorrat | `#/admin` → Vorrat: Witze einfügen (Leerzeile trennt Witze), Anzahl pro Tag wählen, fertig. Sie erscheinen nach und nach. |
+| App | Installierbar (PWA): Symbol auf dem Startbildschirm, Kurzbefehle, funktioniert auch bei Funkloch. |
+| Google | `witze/` enthält statische Seiten je Kategorie, dazu `sitemap.xml` und `robots.txt`. Bei Google Search Console die Sitemap einreichen. |
+
 ## Moderation
 
-Seite mit `#/admin` am Ende aufrufen, z. B. `https://DEIN-NAME.github.io/lachwerk/#/admin`, und den Admin-Schlüssel eingeben.
+Seite mit `#/admin` am Ende aufrufen, z. B. `https://lachwerk.github.io/#/admin`, und den Admin-Schlüssel eingeben.
 Dort siehst du gemeldete und ausgeblendete Witze und kannst sie **freigeben** oder **entfernen**.
 Im Demo-Modus lautet der Schlüssel `demo-moderation`. Konten gelten dort nur im jeweiligen Browser und haben kein echtes Passwort.
 
@@ -89,11 +108,15 @@ Wenn die Seite wächst: Cloudflare Turnstile (unsichtbares Captcha) ergänzen od
 ```
 index.html        Seite
 app.js            App-Logik (Demo- und Live-Modus)
-style.css         Gestaltung (hell und dunkel)
+style.css         Gestaltung
 config.js         Supabase-Zugang (leer = Demo-Modus)
 startwitze.js     360 Startwitze für den Demo-Modus
 supabase.sql      Datenbank: Tabellen, Schutzregeln, Funktionen, Startwitze
 weitere_witze.sql 210 neue Witze für eine schon eingerichtete Datenbank
+erweiterung.sql   Witz des Tages, Duell, Reaktionen, Profile, Challenge, Statistik, Vorrat
+manifest.webmanifest, sw.js, icons/   installierbare App
+witze/            statische Kategorie-Seiten für Google
+sitemap.xml, robots.txt
 impressum.html    Vorlage, bitte ausfüllen
 datenschutz.html  Vorlage, bitte ausfüllen
 og-image.png      Vorschaubild beim Teilen
@@ -103,7 +126,7 @@ favicon.svg       Icon
 ## Vor dem Veröffentlichen
 
 - [ ] `impressum.html` und `datenschutz.html` ausfüllen (für eine öffentliche Seite in Deutschland Pflicht)
-- [ ] In `index.html` bei `og:image` die volle Adresse eintragen, z. B. `https://DEIN-NAME.github.io/lachwerk/og-image.png`. Dann zeigt WhatsApp das Vorschaubild.
+- [ ] In `index.html` bei `og:image` die volle Adresse eintragen, z. B. `https://lachwerk.github.io/og-image.png`. Dann zeigt WhatsApp das Vorschaubild.
 - [ ] Startwitze durchsehen. Die Liste steht unten in `supabase.sql` und in `startwitze.js`.
 - [ ] Moderation testen: einen Witz melden und unter `#/admin` freigeben
 - [ ] Eigene Domain (optional): Settings → Pages → Custom domain
