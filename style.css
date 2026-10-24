@@ -69,7 +69,8 @@ header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; backg
 
 /* ───────── Inhalt ───────── */
 .view { display: grid; gap: 16px; padding-top: 6px; }
-.meta-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: .8rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted-on-yellow); }
+.meta-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: .74rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; color: var(--muted-on-yellow); }
+.meta-row span:last-child { white-space: nowrap; }
 .notice { background: var(--paper); border-radius: 16px; padding: 10px 14px; font-size: .9rem; box-shadow: var(--slab-sm); }
 h1 { font: 800 1.75rem/1.12 var(--f-display); margin: 0; text-wrap: balance; letter-spacing: -.01em; }
 h2 { font: 800 1.15rem var(--f-display); margin: 0; }
@@ -84,13 +85,13 @@ h2 { font: 800 1.15rem var(--f-display); margin: 0; }
 
 /* Witz-Karten: weiß, stark gerundet, harter Schatten */
 ol.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 18px; }
-.card { background: var(--paper); border-radius: var(--r-card); padding: 18px 18px 14px; display: grid; grid-template-columns: 40px 1fr; gap: 6px 12px; box-shadow: var(--slab); }
+.card { background: var(--paper); border-radius: var(--r-card); padding: 18px 18px 14px; display: grid; grid-template-columns: 48px 1fr; gap: 6px 10px; box-shadow: var(--slab); }
 .card.top { box-shadow: 0 8px 0 var(--ink); }
 .card.single { grid-template-columns: 1fr; padding: 22px 22px 16px; }
 .card.single > * { grid-column: 1 / -1; }
 .rank { font: 800 2rem/1 var(--f-display); color: var(--muted); text-align: center; padding-top: 2px; }
 .card.top .rank { color: var(--ink); }
-.rank small { display: block; font: 800 .56rem/1.2 var(--f-body); letter-spacing: .06em; text-transform: uppercase; margin-top: 6px; hyphens: auto; background: var(--yellow); color: var(--ink); border-radius: 6px; padding: 3px 2px; }
+.rank small { display: block; font: 800 .52rem/1.25 var(--f-body); letter-spacing: .02em; text-transform: uppercase; margin-top: 6px; hyphens: manual; overflow-wrap: normal; background: var(--yellow); color: var(--ink); border-radius: 6px; padding: 3px 2px; }
 .body { min-width: 0; }
 .tag { font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
 .joke { margin: 6px 0 12px; font-size: 1.12rem; line-height: 1.4; font-weight: 500; white-space: pre-line; overflow-wrap: anywhere; display: block; text-decoration: none; }
