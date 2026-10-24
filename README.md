@@ -50,6 +50,13 @@ Du hast `supabase.sql` schon früher ausgeführt? Dann führe im SQL Editor `wei
 Es kommen bis zu 210 neue Witze dazu. Witze, die es schon gibt, werden übersprungen. Mehrfach ausführen ist unschädlich.
 Bei einer Neueinrichtung brauchst du die Datei nicht, `supabase.sql` enthält bereits alle 360.
 
+### Zusätzliche Witz-Pakete
+
+- `ruhrpott_witze.sql`: 25 Witze im Ruhrpott-Stil, erscheinen nach und nach über rund 10 Tage
+- `schwarzer_humor.sql`: Kategorie „Schwarzer Humor“ mit 17 Witzen, erscheinen über rund 9 Tage
+
+Jeweils im SQL Editor ausführen. Vorhandene Witze werden übersprungen.
+
 ## Moderation
 
 Seite mit `#/admin` am Ende aufrufen, z. B. `https://DEIN-NAME.github.io/lachwerk/#/admin`, und den Admin-Schlüssel eingeben.
